@@ -29,6 +29,9 @@
         <allure-maven.version>2.11.2</allure-maven.version>
         <!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
         <javafaker.version>1.0.2</javafaker.version>
+        <lombok.version>1.18.24</lombok.version>
+        <owner-java8.version>1.0.12</owner-java8.version>
+        <gson.version>2.9.0</gson.version>
     </properties>
 
     <dependencies>
@@ -36,7 +39,22 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
-            <!--            <scope>test</scope>-->
+<!--            <scope>test</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aeonbits.owner</groupId>
+            <artifactId>owner-java8</artifactId>
+            <version>${owner-java8.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
             <groupId>io.qameta.allure</groupId>
