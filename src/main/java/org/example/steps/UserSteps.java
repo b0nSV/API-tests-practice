@@ -12,9 +12,9 @@ import static org.example.steps.BaseApiSpecs.*;
 
 public class UserSteps {
 
-    private static final String REGISTER_COURIER_URL = "/auth/register";
-    private static final String LOGIN_COURIER_URL = "/auth/login";
-    private static final String PATCH_COURIER_URL = "/auth/user";
+    public static final String REGISTER_COURIER_URL = "/auth/register";
+    public static final String LOGIN_COURIER_URL = "/auth/login";
+    public static final String PATCH_COURIER_URL = "/auth/user";
 
     @Step("Зарегистрировать пользователя")
     public static ResponseAndToken registerUser(User user) {
