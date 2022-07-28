@@ -1,5 +1,7 @@
 package org.example;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.User;
 import org.junit.Test;
@@ -11,7 +13,10 @@ import static org.junit.Assert.assertEquals;
 import static org.example.helpers.RandomSequences.*;
 import static org.example.steps.UserSteps.registerUser;
 import static org.example.steps.UserSteps.deleteUser;
+import static org.example.steps.UserSteps.REGISTER_COURIER_URL;
 
+@Feature("Регистрация пользователя - POST " + REGISTER_COURIER_URL)
+@Story("Для регистрации УЗ пользователя нужно передать все обязательные атрибуты")
 @RunWith(Parameterized.class)
 public class RegisterUserRequiredArgsTest {
 

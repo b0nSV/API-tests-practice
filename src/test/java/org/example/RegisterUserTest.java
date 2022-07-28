@@ -1,5 +1,6 @@
 package org.example;
 
+import io.qameta.allure.Feature;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.User;
 import org.example.buiseness_entities.UserRegisterResponse;
@@ -10,9 +11,12 @@ import org.junit.Test;
 
 import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
-import static org.example.steps.UserSteps.*;
+import static org.example.steps.UserSteps.registerUser;
+import static org.example.steps.UserSteps.deleteUser;
+import static org.example.steps.UserSteps.REGISTER_COURIER_URL;
 import static org.example.helpers.RandomSequences.*;
 
+@Feature("Регистрация пользователя - POST " + REGISTER_COURIER_URL)
 public class RegisterUserTest {
 
     User user;
