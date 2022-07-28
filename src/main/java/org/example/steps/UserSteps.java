@@ -3,8 +3,9 @@ package org.example.steps;
 import com.google.gson.Gson;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
-import org.example.entities.User;
-import org.example.entities.UserCredentials;
+import org.example.buiseness_entities.User;
+import org.example.buiseness_entities.UserCredentials;
+import org.example.helpers.entities.ResponseAndToken;
 
 import static io.restassured.RestAssured.given;
 import static org.example.steps.BaseApiSpecs.*;
@@ -16,13 +17,14 @@ public class UserSteps {
     private static final String PATCH_COURIER_URL = "/auth/user";
 
     @Step("Зарегистрировать пользователя")
-    public static Response registerUser(User user) {
-        return given()
+    public static ResponseAndToken registerUser(User user) {
+        var response = given()
                 .spec(getPostReqSpec())
                 .and()
                 .body(user)
                 .when()
                 .post(BASE_URL + REGISTER_COURIER_URL);
+        return new ResponseAndToken(response, response.getHeader("Authorization"));
     }
 
     @Step("Обновить данные о пользователе")
