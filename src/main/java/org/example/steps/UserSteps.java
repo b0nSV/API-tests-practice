@@ -54,7 +54,7 @@ public class UserSteps {
     public static Response deleteUser(String token) {
         return given()
                 .spec(getDeleteReqSpec())
-                .auth().oauth2(token)
+                .header("Authorization", token)
                 .when()
                 .delete(BASE_URL + PATCH_COURIER_URL);
     }
