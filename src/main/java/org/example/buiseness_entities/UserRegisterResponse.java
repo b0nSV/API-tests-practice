@@ -1,4 +1,4 @@
-package org.example.entities;
+package org.example.buiseness_entities;
 
 import lombok.Data;
 
