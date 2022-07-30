@@ -7,6 +7,7 @@ import org.example.buiseness_entities.User;
 import org.example.buiseness_entities.UserCredentials;
 import org.example.buiseness_entities.UserLoginResponse;
 import org.example.helpers.entities.ResponseAndToken;
+import org.junit.Assert;
 
 import static io.restassured.RestAssured.given;
 import static org.example.steps.BaseApiSpecs.*;
@@ -30,6 +31,7 @@ public class UserSteps {
 
     @Step("Обновить данные о пользователе")
     public static Response patchUser(User user, String accessToken) {
+        if (accessToken == null) Assert.fail("Попытка вызвать \"pathUser\" без токена");
         // null значения из user не добавляются в сформированный json
         Gson gson = new Gson();
         return given()
