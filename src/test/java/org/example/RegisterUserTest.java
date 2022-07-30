@@ -40,7 +40,7 @@ public class RegisterUserTest {
     }
 
     @Test
-    public void registerUserWithRequiredArgsReturnsSuccessTokenTest() {
+    public void registerUserWithRequiredArgsReturnsAccessTokenTest() {
         assertNotNull(registerResponseAndToken.getResponse().as(UserLoginResponse.class).getAccessToken());
     }
 
@@ -83,8 +83,9 @@ public class RegisterUserTest {
     public void afterDeleteUser() {
         if (registerResponseAndToken.getAuthToken() != null) deleteUser(registerResponseAndToken.getAuthToken());
         // Удалить пользователя, если он был создан с использованием данных существующего пользователя
-        if(repeatedRegisterResponseAndToken != null) {
-            if (repeatedRegisterResponseAndToken.getAuthToken() != null) deleteUser(registerResponseAndToken.getAuthToken());
+        if (repeatedRegisterResponseAndToken != null) {
+            if (repeatedRegisterResponseAndToken.getAuthToken() != null)
+                deleteUser(registerResponseAndToken.getAuthToken());
         }
     }
 }
