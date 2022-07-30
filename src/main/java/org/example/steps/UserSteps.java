@@ -28,7 +28,7 @@ public class UserSteps {
     }
 
     @Step("Обновить данные о пользователе")
-    public static Response updateUserInfo(User user, String token) {
+    public static Response partialUpdateUserInfo(User user, String token) {
         // null значения из user не добавляются в сформированный json
         Gson gson = new Gson();
         return given()
@@ -41,7 +41,7 @@ public class UserSteps {
     }
 
     @Step("Обновить данные о пользователе без токена")
-    public static Response updateUserInfo(User user) {
+    public static Response partialUpdateUserInfo(User user) {
         // null значения из user не добавляются в сформированный json
         Gson gson = new Gson();
         return given()
