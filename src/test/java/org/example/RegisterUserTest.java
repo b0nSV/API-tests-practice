@@ -31,7 +31,7 @@ public class RegisterUserTest {
 
     @Test
     public void registerUserWithRequiredArgsReturnsStatus200Test() {
-        assertEquals(SC_OK, registerResponseAndToken.getResponse().statusCode());
+        assertEquals(SC_OK, registerResponseAndToken.getResponse().getStatusCode());
     }
 
     @Test

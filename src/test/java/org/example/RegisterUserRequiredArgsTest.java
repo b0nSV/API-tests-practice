@@ -54,7 +54,7 @@ public class RegisterUserRequiredArgsTest {
         // Удаление пользователя, если он все таки был создан
         if (responseAndToken.getAuthToken() != null) deleteUser(responseAndToken.getAuthToken());
 
-        assertEquals(statusCode, responseAndToken.getResponse().statusCode());
+        assertEquals(statusCode, responseAndToken.getResponse().getStatusCode());
         assertEquals("Email, password and name are required fields"
                 , responseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
         assertFalse(responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());

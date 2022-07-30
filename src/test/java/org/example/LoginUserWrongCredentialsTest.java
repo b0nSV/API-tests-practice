@@ -51,7 +51,7 @@ public class LoginUserWrongCredentialsTest {
         var loginResponseAndToken = loginUser(new UserCredentials(email, password));
 
         assertNull(loginResponseAndToken.getResponse().getHeader("Authorization"));
-        assertEquals(expectedStatusCode, loginResponseAndToken.getResponse().statusCode());
+        assertEquals(expectedStatusCode, loginResponseAndToken.getResponse().getStatusCode());
         assertFalse(loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
         assertEquals("email or password are incorrect"
                 , loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
