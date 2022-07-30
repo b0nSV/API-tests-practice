@@ -21,9 +21,6 @@ import static org.junit.Assert.*;
 public class LoginUserTest {
 
     static ResponseAndToken positiveLoginResponse;
-    static ResponseAndToken wrongEmailLoginResponse;
-    static ResponseAndToken wrongPasswordLoginResponse;
-    static ResponseAndToken notExistingCredentialsLoginResponse;
     static User user;
 
     @BeforeClass
@@ -31,10 +28,6 @@ public class LoginUserTest {
         user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
         registerUser(user);
         positiveLoginResponse = loginUser(new UserCredentials(user));
-
-        wrongEmailLoginResponse = loginUser(new UserCredentials("notExists" + getRandomEmail(),user.getPassword()));
-        wrongPasswordLoginResponse = loginUser(new UserCredentials(user.getEmail(), createRandomPassword(8)));
-        notExistingCredentialsLoginResponse = loginUser(new UserCredentials(user.getEmail(), createRandomPassword(8)));
     }
 
     @Test
