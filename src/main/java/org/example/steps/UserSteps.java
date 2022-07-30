@@ -29,12 +29,12 @@ public class UserSteps {
     }
 
     @Step("Обновить данные о пользователе")
-    public static Response partialUpdateUserInfo(User user, String token) {
+    public static Response patchUser(User user, String accessToken) {
         // null значения из user не добавляются в сформированный json
         Gson gson = new Gson();
         return given()
                 .spec(getPatchReqSpec())
-                .auth().oauth2(token)
+                .header("Authorization", accessToken)
                 .and()
                 .body(gson.toJson(user))
                 .when()
@@ -42,7 +42,7 @@ public class UserSteps {
     }
 
     @Step("Обновить данные о пользователе без токена")
-    public static Response partialUpdateUserInfo(User user) {
+    public static Response patchUser(User user) {
         // null значения из user не добавляются в сформированный json
         Gson gson = new Gson();
         return given()
@@ -54,10 +54,10 @@ public class UserSteps {
     }
 
     @Step("Удалить пользователя")
-    public static Response deleteUser(String token) {
+    public static Response deleteUser(String accessToken) {
         return given()
                 .spec(getDeleteReqSpec())
-                .header("Authorization", token)
+                .header("Authorization", accessToken)
                 .when()
                 .delete(BASE_URL + PATCH_COURIER_URL);
     }
