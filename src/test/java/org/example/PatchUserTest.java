@@ -1,7 +1,7 @@
 package org.example;
 
 import org.example.buiseness_entities.ErrorMessageResponse;
-import org.example.buiseness_entities.PatchUserResponse;
+import org.example.buiseness_entities.UserPatchResponse;
 import org.example.buiseness_entities.User;
 import io.qameta.allure.Feature;
 import org.junit.*;
@@ -37,7 +37,7 @@ public class PatchUserTest {
     @Test
     public void patchUserWithTokenReturnsSuccessTrueTest() {
         var newUserData = new User("new" + randomUser.getEmail(), null, null);
-        var patchUserResponse = patchUser(newUserData, accessToken).as(PatchUserResponse.class);
+        var patchUserResponse = patchUser(newUserData, accessToken).as(UserPatchResponse.class);
         assertTrue(patchUserResponse.isSuccess());
     }
 
@@ -45,7 +45,7 @@ public class PatchUserTest {
     public void patchUserEmailReturnsNewEmailTest() {
         var newEmail = "new" + randomUser.getEmail();
         var newUserData = new User(newEmail, null, null);
-        var patchUserResponse = patchUser(newUserData, accessToken).as(PatchUserResponse.class);
+        var patchUserResponse = patchUser(newUserData, accessToken).as(UserPatchResponse.class);
         assertEquals(newEmail, patchUserResponse.getUser().getEmail());
     }
 
@@ -53,7 +53,7 @@ public class PatchUserTest {
     public void patchUserNameReturnsNewNameTest() {
         var newName = "новый" + randomUser.getName();
         var newUserData = new User(null, null, newName);
-        var patchUserResponse = patchUser(newUserData, accessToken).as(PatchUserResponse.class);
+        var patchUserResponse = patchUser(newUserData, accessToken).as(UserPatchResponse.class);
         assertEquals(newName, patchUserResponse.getUser().getName());
     }
 
@@ -61,7 +61,7 @@ public class PatchUserTest {
     public void patchUserPasswordDoNotReturnsPasswordTest() {
         var newPassword = createRandomPassword(9);
         var newUserData = new User(null, newPassword, null);
-        var patchUserResponse = patchUser(newUserData, accessToken).as(PatchUserResponse.class);
+        var patchUserResponse = patchUser(newUserData, accessToken).as(UserPatchResponse.class);
         assertNull(patchUserResponse.getUser().getPassword());
     }
 
