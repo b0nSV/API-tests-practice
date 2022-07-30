@@ -14,6 +14,7 @@ import static org.example.helpers.RandomSequences.*;
 import static org.example.steps.UserSteps.registerUser;
 import static org.example.steps.UserSteps.deleteUser;
 import static org.example.steps.UserSteps.REGISTER_COURIER_URL;
+import static org.junit.Assert.assertFalse;
 
 @Feature("Регистрация пользователя - POST " + REGISTER_COURIER_URL)
 @Story("Для регистрации УЗ пользователя нужно передать все обязательные атрибуты")
@@ -50,12 +51,13 @@ public class RegisterUserRequiredArgsTest {
         var user = new User(email, password, name);
         var responseAndToken = registerUser(user);
 
+        // Удаление пользователя, если он все таки был создан
+        if (responseAndToken.getAuthToken() != null) deleteUser(responseAndToken.getAuthToken());
+
         assertEquals(statusCode, responseAndToken.getResponse().statusCode());
         assertEquals("Email, password and name are required fields"
                 , responseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
-        assertEquals(false, responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
+        assertFalse(responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
 
-        // Удаление пользователя
-        if (responseAndToken.getAuthToken() != null) deleteUser(responseAndToken.getAuthToken());
     }
 }
