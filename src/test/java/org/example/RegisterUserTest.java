@@ -20,58 +20,71 @@ import static org.example.helpers.RandomSequences.*;
 public class RegisterUserTest {
 
     User user;
-    ResponseAndToken responseAndToken;
+    ResponseAndToken registerResponseAndToken;
+    ResponseAndToken repeatedRegisterResponseAndToken;
 
     @Before
     public void beforeRegisterRandomUser() {
         user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
-        responseAndToken = registerUser(user);
+        registerResponseAndToken = registerUser(user);
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsStatus200Test() {
-        assertEquals(SC_OK, responseAndToken.getResponse().statusCode());
+        assertEquals(SC_OK, registerResponseAndToken.getResponse().statusCode());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsSuccessTrueTest() {
-        assertTrue(responseAndToken.getResponse().as(UserLoginResponse.class).isSuccess());
+        assertTrue(registerResponseAndToken.getResponse().as(UserLoginResponse.class).isSuccess());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsSuccessTokenTest() {
-        assertNotNull(responseAndToken.getResponse().as(UserLoginResponse.class).getAccessToken());
+        assertNotNull(registerResponseAndToken.getResponse().as(UserLoginResponse.class).getAccessToken());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsRefreshTokenTest() {
-        assertNotNull(responseAndToken.getResponse().as(UserLoginResponse.class).getRefreshToken());
+        assertNotNull(registerResponseAndToken.getResponse().as(UserLoginResponse.class).getRefreshToken());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsUserEmailTest() {
         assertEquals(user.getEmail()
-                , responseAndToken.getResponse().as(UserLoginResponse.class).getUser().getEmail());
+                , registerResponseAndToken.getResponse().as(UserLoginResponse.class).getUser().getEmail());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsUserNameTest() {
         assertEquals(user.getName()
-                , responseAndToken.getResponse().as(UserLoginResponse.class).getUser().getName());
+                , registerResponseAndToken.getResponse().as(UserLoginResponse.class).getUser().getName());
     }
 
     @Test
     public void registerUserByExistingUserDataReturns403Test() {
-        responseAndToken = registerUser(user);
-        assertEquals(SC_FORBIDDEN, responseAndToken.getResponse().getStatusCode());
-        assertFalse(responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
+        repeatedRegisterResponseAndToken = registerUser(user);
+        assertEquals(SC_FORBIDDEN, repeatedRegisterResponseAndToken.getResponse().getStatusCode());
+        assertFalse(repeatedRegisterResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
         assertEquals("User already exists"
-                , responseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
+                , repeatedRegisterResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
+    }
+
+    @Test
+    public void registerUserWithExistingUserEmailReturns403Test() {
+        repeatedRegisterResponseAndToken = registerUser(new User(user.getEmail(), createRandomPassword(8), getRandomName()));
+        assertEquals(SC_FORBIDDEN, repeatedRegisterResponseAndToken.getResponse().getStatusCode());
+        assertFalse(repeatedRegisterResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
+        assertEquals("User already exists"
+                , repeatedRegisterResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
     }
 
     @After
     public void afterDeleteUser() {
-        if (responseAndToken.getAuthToken() != null)
-            deleteUser(responseAndToken.getAuthToken());
+        if (registerResponseAndToken.getAuthToken() != null) deleteUser(registerResponseAndToken.getAuthToken());
+        // Удалить пользователя, если он был создан с использованием данных существующего пользователя
+        if(repeatedRegisterResponseAndToken != null) {
+            if (repeatedRegisterResponseAndToken.getAuthToken() != null) deleteUser(registerResponseAndToken.getAuthToken());
+        }
     }
 }
