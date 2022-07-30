@@ -20,7 +20,7 @@ public class PatchUserTest {
 
     static User randomUser = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
     static String accessToken;
-    static String anotherUserAccessToken;
+    String anotherUserAccessToken;
 
     @BeforeClass
     public static void registerRandomUser() {
