@@ -70,13 +70,14 @@ public class UserSteps {
     }
 
     @Step("Выполнить вход пользователем в систему")
-    public static Response loginUser(UserCredentials userCredentials) {
-        return given()
+    public static ResponseAndToken loginUser(UserCredentials userCredentials) {
+        var response = given()
                 .spec(getPostReqSpec())
                 .and()
                 .body(userCredentials)
                 .when()
                 .post(BASE_URL + LOGIN_COURIER_URL);
+        return new ResponseAndToken(response, response.getHeader("Authorization"));
     }
 
 }
