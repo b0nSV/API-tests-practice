@@ -10,13 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.apache.http.HttpStatus.*;
+import static org.example.helpers.entities.TestsByUrlName.REGISTER_USER_METHOD_TESTS_NAME;
 import static org.junit.Assert.*;
 import static org.example.steps.UserSteps.registerUser;
 import static org.example.steps.UserSteps.deleteUser;
-import static org.example.steps.UserSteps.REGISTER_COURIER_URL;
 import static org.example.helpers.RandomSequences.*;
 
-@Feature("Регистрация пользователя - POST " + REGISTER_COURIER_URL)
+@Feature(REGISTER_USER_METHOD_TESTS_NAME)
 public class RegisterUserTest {
 
     User user;

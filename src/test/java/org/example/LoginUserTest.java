@@ -10,11 +10,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.example.helpers.entities.TestsByUrlName.LOGIN_USER_METHOD_TESTS_NAME;
 import static org.example.helpers.RandomSequences.*;
-import static org.example.steps.UserSteps.*;
+import static org.example.steps.UserSteps.registerUser;
+import static org.example.steps.UserSteps.loginUser;
+import static org.example.steps.UserSteps.deleteUser;
 import static org.junit.Assert.*;
 
-@Feature("Выполнить вход - POST " + LOGIN_COURIER_URL)
+@Feature(LOGIN_USER_METHOD_TESTS_NAME)
 public class LoginUserTest {
 
     static ResponseAndToken positiveLoginResponse;

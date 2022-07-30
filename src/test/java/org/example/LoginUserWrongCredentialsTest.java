@@ -11,11 +11,14 @@ import org.junit.runners.Parameterized;
 
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.example.helpers.RandomSequences.*;
-import static org.example.steps.UserSteps.*;
+import static org.example.helpers.entities.TestsByUrlName.LOGIN_USER_METHOD_TESTS_NAME;
+import static org.example.steps.UserSteps.registerUser;
+import static org.example.steps.UserSteps.loginUser;
+import static org.example.steps.UserSteps.deleteUser;
 import static org.junit.Assert.*;
 
-@Feature("Выполнить вход - POST " + LOGIN_COURIER_URL)
-@Story("Ошибка аутентификации с неверными параметрами запроса")
+@Feature(LOGIN_USER_METHOD_TESTS_NAME)
+@Story("Ошибка аутентификации пользователя с неверными данными запроса")
 @RunWith(Parameterized.class)
 public class LoginUserWrongCredentialsTest {
 

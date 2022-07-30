@@ -9,15 +9,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
+import static org.example.helpers.entities.TestsByUrlName.REGISTER_USER_METHOD_TESTS_NAME;
 import static org.junit.Assert.assertEquals;
 import static org.example.helpers.RandomSequences.*;
 import static org.example.steps.UserSteps.registerUser;
 import static org.example.steps.UserSteps.deleteUser;
-import static org.example.steps.UserSteps.REGISTER_COURIER_URL;
 import static org.junit.Assert.assertFalse;
 
-@Feature("Регистрация пользователя - POST " + REGISTER_COURIER_URL)
-@Story("Для регистрации УЗ пользователя нужно передать все обязательные атрибуты")
+@Feature(REGISTER_USER_METHOD_TESTS_NAME)
+@Story("Ошибка регистрации пользователя без обязательных параметров запроса")
 @RunWith(Parameterized.class)
 public class RegisterUserRequiredArgsTest {
 
@@ -58,6 +58,5 @@ public class RegisterUserRequiredArgsTest {
         assertEquals("Email, password and name are required fields"
                 , responseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
         assertFalse(responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
-
     }
 }
