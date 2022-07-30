@@ -3,7 +3,7 @@ package org.example.buiseness_entities;
 import lombok.Data;
 
 @Data
-public class UserRegisterResponse {
+public class UserLoginResponse {
     private boolean success;
     private User user;
     private String accessToken;

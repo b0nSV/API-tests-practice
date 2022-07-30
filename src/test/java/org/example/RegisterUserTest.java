@@ -3,7 +3,7 @@ package org.example;
 import io.qameta.allure.Feature;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.User;
-import org.example.buiseness_entities.UserRegisterResponse;
+import org.example.buiseness_entities.UserLoginResponse;
 import org.example.helpers.entities.ResponseAndToken;
 import org.junit.After;
 import org.junit.Before;
@@ -35,36 +35,36 @@ public class RegisterUserTest {
 
     @Test
     public void registerUserWithRequiredArgsReturnsSuccessTrueTest() {
-        assertEquals(true, responseAndToken.getResponse().as(UserRegisterResponse.class).isSuccess());
+        assertTrue(responseAndToken.getResponse().as(UserLoginResponse.class).isSuccess());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsSuccessTokenTest() {
-        assertNotNull(responseAndToken.getResponse().as(UserRegisterResponse.class).getAccessToken());
+        assertNotNull(responseAndToken.getResponse().as(UserLoginResponse.class).getAccessToken());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsRefreshTokenTest() {
-        assertNotNull(responseAndToken.getResponse().as(UserRegisterResponse.class).getRefreshToken());
+        assertNotNull(responseAndToken.getResponse().as(UserLoginResponse.class).getRefreshToken());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsUserEmailTest() {
         assertEquals(user.getEmail()
-                , responseAndToken.getResponse().as(UserRegisterResponse.class).getUser().getEmail());
+                , responseAndToken.getResponse().as(UserLoginResponse.class).getUser().getEmail());
     }
 
     @Test
     public void registerUserWithRequiredArgsReturnsUserNameTest() {
         assertEquals(user.getName()
-                , responseAndToken.getResponse().as(UserRegisterResponse.class).getUser().getName());
+                , responseAndToken.getResponse().as(UserLoginResponse.class).getUser().getName());
     }
 
     @Test
     public void registerUserByExistingUserDataReturns403Test() {
         responseAndToken = registerUser(user);
         assertEquals(SC_FORBIDDEN, responseAndToken.getResponse().getStatusCode());
-        assertEquals(false, responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
+        assertFalse(responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
         assertEquals("User already exists"
                 , responseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
     }
