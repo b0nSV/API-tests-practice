@@ -5,6 +5,7 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.example.buiseness_entities.User;
 import org.example.buiseness_entities.UserCredentials;
+import org.example.buiseness_entities.UserLoginResponse;
 import org.example.helpers.entities.ResponseAndToken;
 
 import static io.restassured.RestAssured.given;
@@ -24,7 +25,7 @@ public class UserSteps {
                 .body(user)
                 .when()
                 .post(BASE_URL + REGISTER_COURIER_URL);
-        return new ResponseAndToken(response, response.getHeader("Authorization"));
+        return new ResponseAndToken(response, response.as(UserLoginResponse.class).getAccessToken());
     }
 
     @Step("Обновить данные о пользователе")
@@ -77,7 +78,7 @@ public class UserSteps {
                 .body(userCredentials)
                 .when()
                 .post(BASE_URL + LOGIN_COURIER_URL);
-        return new ResponseAndToken(response, response.getHeader("Authorization"));
+        return new ResponseAndToken(response, response.as(UserLoginResponse.class).getAccessToken());
     }
 
 }
