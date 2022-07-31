@@ -49,9 +49,9 @@ public class CreateOrderTest {
     @Test
     public void createOrderWithAuthTokenReturnsStatus200Test() {
         order = new OrderCreate(List.of(
-                (ingredientIdsPerType.get(TYPE_BUN).get(0)),
-                (ingredientIdsPerType.get(TYPE_MAIN).get(0)),
-                (ingredientIdsPerType.get(TYPE_SAUCE).get(0))
+                (ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse("")),
+                (ingredientIdsPerType.get(TYPE_MAIN).stream().findAny().orElse("")),
+                (ingredientIdsPerType.get(TYPE_SAUCE).stream().findAny().orElse(""))
         ));
         var response = createOrder(order, accessToken);
         assertEquals(SC_OK, response.getStatusCode());
@@ -60,9 +60,9 @@ public class CreateOrderTest {
     @Test
     public void createOrderWithAuthTokenReturnsOrderNumberTest() {
         order = new OrderCreate(List.of(
-                (ingredientIdsPerType.get(TYPE_BUN).get(0)),
-                (ingredientIdsPerType.get(TYPE_MAIN).get(0)),
-                (ingredientIdsPerType.get(TYPE_SAUCE).get(0))
+                (ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse("")),
+                (ingredientIdsPerType.get(TYPE_MAIN).stream().findAny().orElse("")),
+                (ingredientIdsPerType.get(TYPE_SAUCE).stream().findAny().orElse(""))
         ));
         var response = createOrder(order, accessToken);
         assertNotEquals(0, response.as(OrderCreateResponse.class).getOrder().getNumber());
