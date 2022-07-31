@@ -44,19 +44,19 @@ public class OrderSteps {
     }
 
     @Step("Получить список заказов пользователя")
-    public static OrderList getOrders(String accessToken) {
+    public static Response getOrders(String accessToken) {
         return given()
                 .spec(getGetReqSpec())
                 .header("Authorization", accessToken)
                 .when()
-                .get(BASE_URL + GET_ORDERS_URL).as(OrderList.class);
+                .get(BASE_URL + GET_ORDERS_URL);
     }
 
     @Step("Получить список заказов пользователя (без токена)")
-    public static OrderList getOrders() {
+    public static Response getOrders() {
         return given()
                 .spec(getGetReqSpec())
                 .when()
-                .get(BASE_URL + GET_ORDERS_URL).as(OrderList.class);
+                .get(BASE_URL + GET_ORDERS_URL);
     }
 }
