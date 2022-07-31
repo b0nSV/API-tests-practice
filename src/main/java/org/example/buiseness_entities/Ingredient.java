@@ -16,4 +16,16 @@ public class Ingredient {
     private String image_mobile;
     private String image_large;
     private int __v;
+// TODO удалить после стабилизации тестов создания заказа
+/*    public static String getId(Ingredient ingredient) {
+        if (ingredient == null) {
+            Assert.fail("Ингредиент не найден");
+            return null;
+        }
+        if (ingredient.get_id() != null) return ingredient.get_id();
+        else {
+            Assert.fail("У ингредиента нет \"_id\"");
+            return null;
+        }
+    }*/
 }
