@@ -14,7 +14,17 @@ public class OrderSteps {
     public static final String GET_ORDERS_ALL_URL = "/orders/all";
     public static final String GET_ORDERS_URL = "/orders";
 
-    @Step("Создать заказ")
+    @Step("Создать заказ авторизованным пользователем")
+    public static Response createOrder(OrderCreate newOrder, String accessToken) {
+        // null значения из user не добавляются в сформированный json
+        return given()
+                .spec(getPostReqSpec())
+                .header("Authorization", accessToken)
+                .and()
+                .body(newOrder)
+                .when()
+                .post(BASE_URL + CREATE_ORDER_URL);
+    }@Step("Создать заказ (без токена)")
     public static Response createOrder(OrderCreate newOrder) {
         // null значения из user не добавляются в сформированный json
         return given()
