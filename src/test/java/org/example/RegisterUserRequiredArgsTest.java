@@ -4,6 +4,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.User;
+import org.example.helpers.entities.ResponseAndToken;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -25,6 +27,7 @@ public class RegisterUserRequiredArgsTest {
     private final String password;
     private final String name;
     private final int statusCode;
+    private ResponseAndToken responseAndToken;
 
     public RegisterUserRequiredArgsTest(String email, String password, String name, int statusCode) {
         this.email = email;
@@ -49,14 +52,18 @@ public class RegisterUserRequiredArgsTest {
     @Test
     public void registerUserRequiredArgs() {
         var user = new User(email, password, name);
-        var responseAndToken = registerUser(user);
-
-        // Удаление пользователя, если он все таки был создан
-        if (responseAndToken.getAuthToken() != null) deleteUser(responseAndToken.getAuthToken());
+        responseAndToken = registerUser(user);
 
         assertEquals(statusCode, responseAndToken.getResponse().getStatusCode());
         assertEquals("Email, password and name are required fields"
                 , responseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
         assertFalse(responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
     }
+
+    @After
+    public void after() {
+        // Удаление пользователя, если он все таки был создан
+        if (responseAndToken.getAuthToken() != null) deleteUser(responseAndToken.getAuthToken());
+    }
+
 }

@@ -5,6 +5,7 @@ import io.qameta.allure.Story;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.User;
 import org.example.buiseness_entities.UserCredentials;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,6 +27,7 @@ public class LoginUserWrongCredentialsTest {
     private final String email;
     private final String password;
     private final int expectedStatusCode;
+    private String registerToken;
 
     public LoginUserWrongCredentialsTest(String email, String password, int expectedStatusCode) {
         this.email = email;
@@ -47,7 +49,7 @@ public class LoginUserWrongCredentialsTest {
 
     @Test
     public void loginUserWrongCredentialsTest() {
-        var registerToken = registerUser(user).getAuthToken();
+        registerToken = registerUser(user).getAuthToken();
         var loginResponseAndToken = loginUser(new UserCredentials(email, password));
 
         assertNull(loginResponseAndToken.getResponse().getHeader("Authorization"));
@@ -55,8 +57,11 @@ public class LoginUserWrongCredentialsTest {
         assertFalse(loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess());
         assertEquals("email or password are incorrect"
                 , loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage());
+    }
 
-        // Удаление учетной записи в случае успешного логина
+    @After
+    public void after() {
         if (registerToken != null) deleteUser(registerToken);
     }
+
 }
