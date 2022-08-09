@@ -24,7 +24,9 @@ public class OrderSteps {
                 .body(newOrder)
                 .when()
                 .post(BASE_URL + CREATE_ORDER_URL);
-    }@Step("Создать заказ (без токена)")
+    }
+
+    @Step("Создать заказ (без токена)")
     public static Response createOrder(OrderCreate newOrder) {
         // null значения из user не добавляются в сформированный json
         return given()
@@ -59,4 +61,5 @@ public class OrderSteps {
                 .when()
                 .get(BASE_URL + GET_ORDERS_URL);
     }
+    
 }
