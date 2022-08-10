@@ -1,6 +1,7 @@
 package org.example;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.junit4.DisplayName;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.User;
 import org.example.buiseness_entities.UserLoginResponse;
@@ -30,38 +31,45 @@ public class RegisterUserTest {
     }
 
     @Test
+    @DisplayName("Регистрация пользователя с заполнением всех обязательных полей возвращает статус код 200")
     public void registerUserWithRequiredArgsReturnsStatus200Test() {
         assertEquals(SC_OK, registerResponseAndToken.getResponse().getStatusCode());
     }
 
     @Test
+    @DisplayName("При успешной регистрации пользователя в теле ответа возвращается \"success\":true")
     public void registerUserWithRequiredArgsReturnsSuccessTrueTest() {
         assertTrue(registerResponseAndToken.getResponse().as(UserLoginResponse.class).isSuccess());
     }
 
     @Test
+    @DisplayName("При успешной регистрации пользователя в теле ответа возвращается токен доступа(accessToken)")
     public void registerUserWithRequiredArgsReturnsAccessTokenTest() {
         assertNotNull(registerResponseAndToken.getResponse().as(UserLoginResponse.class).getAccessToken());
     }
 
     @Test
+    @DisplayName("При успешной регистрации пользователя в теле ответа возвращается рефреш токен(refreshToken)")
     public void registerUserWithRequiredArgsReturnsRefreshTokenTest() {
         assertNotNull(registerResponseAndToken.getResponse().as(UserLoginResponse.class).getRefreshToken());
     }
 
     @Test
+    @DisplayName("При успешной регистрации пользователя в теле ответа возвращается указанный email")
     public void registerUserWithRequiredArgsReturnsUserEmailTest() {
         assertEquals(user.getEmail()
                 , registerResponseAndToken.getResponse().as(UserLoginResponse.class).getUser().getEmail());
     }
 
     @Test
+    @DisplayName("При успешной регистрации пользователя в теле ответа возвращается указанное имя")
     public void registerUserWithRequiredArgsReturnsUserNameTest() {
         assertEquals(user.getName()
                 , registerResponseAndToken.getResponse().as(UserLoginResponse.class).getUser().getName());
     }
 
     @Test
+    @DisplayName("При попытке регистрации по уже существующим данным пользователя статус код ответа 403")
     public void registerUserByExistingUserDataReturns403Test() {
         repeatedRegisterResponseAndToken = registerUser(user);
         assertEquals(SC_FORBIDDEN, repeatedRegisterResponseAndToken.getResponse().getStatusCode());
@@ -71,6 +79,7 @@ public class RegisterUserTest {
     }
 
     @Test
+    @DisplayName("При попытке регистрации с уже существующим значением email статус код ответа 403")
     public void registerUserWithExistingUserEmailReturns403Test() {
         repeatedRegisterResponseAndToken = registerUser(new User(user.getEmail(), createRandomPassword(8), getRandomName()));
         assertEquals(SC_FORBIDDEN, repeatedRegisterResponseAndToken.getResponse().getStatusCode());
@@ -88,4 +97,5 @@ public class RegisterUserTest {
                 deleteUser(registerResponseAndToken.getAuthToken());
         }
     }
+
 }

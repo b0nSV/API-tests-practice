@@ -1,6 +1,7 @@
 package org.example;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.junit4.DisplayName;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.OrderCreate;
 import org.example.buiseness_entities.OrderCreateResponse;
@@ -36,6 +37,7 @@ public class CreateOrderTest {
     }
 
     @Test
+    @DisplayName("Создание заказа без авторизации возвращает статус код 200")
     public void createOrderWithoutAuthTokenReturnsStatus200Test() {
         order = new OrderCreate(List.of(
                 (ingredientIdsPerType.get(TYPE_BUN).get(0)),
@@ -47,6 +49,7 @@ public class CreateOrderTest {
     }
 
     @Test
+    @DisplayName("Создание заказа с авторизационным токеном возвращает статус код 200")
     public void createOrderWithAuthTokenReturnsStatus200Test() {
         order = new OrderCreate(List.of(
                 (ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse("")),
@@ -58,6 +61,7 @@ public class CreateOrderTest {
     }
 
     @Test
+    @DisplayName("После успешного создания заказа возвращается номер заказа")
     public void createOrderWithAuthTokenReturnsOrderNumberTest() {
         order = new OrderCreate(List.of(
                 (ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse("")),
@@ -69,6 +73,7 @@ public class CreateOrderTest {
     }
 
     @Test
+    @DisplayName("При создание заказа с несуществующим хэшем ингредиента возвращается статус код 500")
     public void createOrderWithWrongIngredientHashReturnsStatus500Test() {
         order = new OrderCreate(List.of("a" + (ingredientIdsPerType.get(TYPE_BUN).get(0).substring(1))));
         var response = createOrder(order, accessToken);
@@ -76,6 +81,7 @@ public class CreateOrderTest {
     }
 
     @Test
+    @DisplayName("Создание заказа без ингредиентов возвращает статус код 400")
     public void createOrderWithoutIngredientsReturnsStatus400Test() {
         order = new OrderCreate(List.of());
         var response = createOrder(order, accessToken);
@@ -83,6 +89,7 @@ public class CreateOrderTest {
     }
 
     @Test
+    @DisplayName("Создание заказа без ингредиентов возвращает сообщение об ошибке")
     public void createOrderWithoutIngredientsReturnsErrorMessageTest() {
         order = new OrderCreate(List.of());
         var response = createOrder(order, accessToken);
@@ -90,6 +97,7 @@ public class CreateOrderTest {
     }
 
     @Test
+    @DisplayName("Создание заказа без ингредиентов возвращает атрибут \"success\":false")
     public void createOrderWithoutIngredientsReturnsSuccessFalseTest() {
         order = new OrderCreate(List.of());
         var response = createOrder(order, accessToken);
@@ -100,4 +108,5 @@ public class CreateOrderTest {
     public static void deleteCourierAfterTests() {
         if (accessToken != null) deleteUser(accessToken);
     }
+
 }

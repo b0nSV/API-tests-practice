@@ -1,5 +1,6 @@
 package org.example;
 
+import io.qameta.allure.junit4.DisplayName;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.UserPatchResponse;
 import org.example.buiseness_entities.User;
@@ -28,6 +29,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При успешном обновлении данных пользователя возвращается статус код 200")
     public void patchUserWithTokenReturnsStatus200Test() {
         var newUserData = new User("new" + randomUser.getEmail(), null, null);
         Response response = patchUser(newUserData, accessToken);
@@ -35,6 +37,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При успешном обновлении данных пользователя возвращается \"success\": true")
     public void patchUserWithTokenReturnsSuccessTrueTest() {
         var newUserData = new User("new" + randomUser.getEmail(), null, null);
         var patchUserResponse = patchUser(newUserData, accessToken).as(UserPatchResponse.class);
@@ -42,6 +45,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При успешном обновлении email пользователя в теле ответа возвращается новый email")
     public void patchUserEmailReturnsNewEmailTest() {
         var newEmail = "new" + randomUser.getEmail();
         var newUserData = new User(newEmail, null, null);
@@ -50,6 +54,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При успешном обновлении имени пользователя в теле ответа возвращается новое имя")
     public void patchUserNameReturnsNewNameTest() {
         var newName = "новый" + randomUser.getName();
         var newUserData = new User(null, null, newName);
@@ -58,6 +63,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При успешном обновлении пароля пользователя в теле ответа не возвращается новый пароль")
     public void patchUserPasswordDoNotReturnsPasswordTest() {
         var newPassword = createRandomPassword(9);
         var newUserData = new User(null, newPassword, null);
@@ -66,6 +72,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При обновлении данных пользователя без авторизационного токена возвращается статус код 401")
     public void patchUserWithoutTokenReturnsStatus401Test() {
         var newPassword = createRandomPassword(9);
         var newUserData = new User(null, newPassword, null);
@@ -74,6 +81,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При обновлении данных пользователя без авторизационного токена возвращается сообщение об ошибке")
     public void patchUserWithoutTokenReturnsErrorMessageTest() {
         var newPassword = createRandomPassword(9);
         var newUserData = new User(null, newPassword, null);
@@ -82,6 +90,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При попытке обновить email значением принадлежащим другому пользователя статус код ответа 403")
     public void patchUserUsingAnotherUserEmailReturns403Test() {
         var anotherRandomUser = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
         anotherUserAccessToken = registerUser(anotherRandomUser).getAuthToken();
@@ -90,6 +99,7 @@ public class PatchUserTest {
     }
 
     @Test
+    @DisplayName("При попытке обновить email значением, принадлежащим другому пользователя, возвращается сообщение об ошибке")
     public void patchUserUsingAnotherUserEmailReturnsErrorMessageTest() {
         var anotherRandomUser = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
         anotherUserAccessToken = registerUser(anotherRandomUser).getAuthToken();

@@ -1,6 +1,7 @@
 package org.example;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.junit4.DisplayName;
 import org.example.buiseness_entities.ErrorMessageResponse;
 import org.example.buiseness_entities.OrderCreate;
 import org.example.buiseness_entities.OrderList;
@@ -25,6 +26,7 @@ import static org.junit.Assert.*;
 
 @Feature(GET_USER_ORDERS_METHOD_TESTS_NAME)
 public class GetUserOrdersTest {
+
     static String accessToken;
     static final int countOrder = 3;
 
@@ -45,24 +47,28 @@ public class GetUserOrdersTest {
     }
 
     @Test
+    @DisplayName("В теле ответа количество заказов соответствует количество созданных пользователем заказов")
     public void getUserOrdersWithAuthTokenReturnsOrdersTest() {
         var getOrdersListResponse = getOrders(accessToken);
         assertEquals(countOrder, getOrdersListResponse.as(OrderList.class).getOrders().size());
     }
 
     @Test
+    @DisplayName("При получении списка заказов с авторизационным токеном возвращается статус код 200")
     public void getUserOrdersWithAuthTokenReturnsStatus200Test() {
         var getOrdersListResponse = getOrders(accessToken);
         assertEquals(SC_OK, getOrdersListResponse.getStatusCode());
     }
 
     @Test
+    @DisplayName("При получении списка заказов без авторизационного токена возвращается статус код 401")
     public void getUserOrdersWithoutAuthTokenReturnsStatus401Test() {
         var getOrdersListResponse = getOrders();
         assertEquals(SC_UNAUTHORIZED, getOrdersListResponse.getStatusCode());
     }
 
     @Test
+    @DisplayName("При получении списка заказов без авторизационного токена возвращается сообщение об ошибке")
     public void getUserOrdersWithoutAuthTokenReturnsErrorMessageTest() {
         var getOrdersListResponse = getOrders();
         assertEquals("You should be authorised",
@@ -70,6 +76,7 @@ public class GetUserOrdersTest {
     }
 
     @Test
+    @DisplayName("При получении списка заказов без авторизационного токена возвращается атрибут \"success\": false")
     public void getUserOrdersWithoutAuthTokenReturnsSuccessFalseTest() {
         var getOrdersListResponse = getOrders();
         assertFalse(getOrdersListResponse.as(ErrorMessageResponse.class).isSuccess());
@@ -79,4 +86,5 @@ public class GetUserOrdersTest {
     public static void deleteCourierAfterTests() {
         if (accessToken != null) deleteUser(accessToken);
     }
+
 }

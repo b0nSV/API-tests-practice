@@ -1,6 +1,7 @@
 package org.example;
 
 import io.qameta.allure.Feature;
+import io.qameta.allure.junit4.DisplayName;
 import org.example.buiseness_entities.User;
 import org.example.buiseness_entities.UserCredentials;
 import org.example.buiseness_entities.UserLoginResponse;
@@ -31,39 +32,39 @@ public class LoginUserTest {
     }
 
     @Test
+    @DisplayName("При логине по существующим данным пользователя статус код ответа 200")
     public void loginUserExistingCredentialsReturnsStatus200Test() {
         assertEquals(SC_OK, positiveLoginResponse.getResponse().getStatusCode());
     }
 
     @Test
+    @DisplayName("При логине по существующим данным пользователя в теле ответа атрибут \"success\": true")
     public void loginUserExistingCredentialsReturnsSuccessTrueTest() {
         assertTrue(positiveLoginResponse.getResponse().as(UserLoginResponse.class).isSuccess());
     }
 
     @Test
+    @DisplayName("При логине по существующим данным пользователя в теле ответа есть токен доступа(accessToken)")
     public void loginUserExistingCredentialsReturnsSuccessTokenTest() {
         assertNotNull(positiveLoginResponse.getResponse().as(UserLoginResponse.class).getAccessToken());
     }
 
     @Test
+    @DisplayName("При логине по существующим данным пользователя в теле ответа есть рефреш токен(refreshToken)")
     public void loginUserExistingCredentialsReturnsRefreshTokenTest() {
         assertNotNull(positiveLoginResponse.getResponse().as(UserLoginResponse.class).getRefreshToken());
     }
 
     @Test
+    @DisplayName("При логине по существующим данным пользователя в теле ответа есть имя пользователя")
     public void loginUserExistingCredentialsReturnsUserNameTest() {
         assertEquals(user.getName()
                 , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getName());
     }
 
     @Test
+    @DisplayName("При логине по существующим данным пользователя в теле ответа есть email пользователя")
     public void loginUserExistingCredentialsReturnsUserEmailTest() {
-        assertEquals(user.getEmail()
-                , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getEmail());
-    }
-
-    @Test
-    public void loginUserWrongEmailReturnsUserEmailTest() {
         assertEquals(user.getEmail()
                 , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getEmail());
     }
@@ -72,4 +73,5 @@ public class LoginUserTest {
     public static void tearDown() {
         if (positiveLoginResponse.getAuthToken() != null) deleteUser(positiveLoginResponse.getAuthToken());
     }
+
 }
