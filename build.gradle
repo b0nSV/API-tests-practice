@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.11.2'
+}
+
+group 'site.nomoreparties.stellarburgers'
+version '2.0.0'
+description 'qa-java-diplom2'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+def allureVersion = '2.22.0'
+def junit5Version = '5.9.3'
+def lombokVersion = '1.18.26'
+
+dependencies {
+    // JUnit
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit5Version}"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:${junit5Version}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junit5Version}"
+    // Allure
+    implementation "io.qameta.allure:allure-junit5:${allureVersion}"
+    // Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+    // AssertJ
+    testImplementation "org.assertj:assertj-core:3.24.2"
+    // Java-Faker
+    implementation "com.github.javafaker:javafaker:1.0.2"
+    // Owner
+    implementation "org.aeonbits.owner:owner:1.0.12"
+    // Без него не заводятся тесты на 17 версии java
+    runtimeOnly "org.aspectj:aspectjweaver:1.9.19"
+    // Simple logger
+    testImplementation "org.slf4j:slf4j-simple:2.0.7"
+    // REST Assured
+    implementation 'io.rest-assured:rest-assured:5.3.0'
+    implementation "io.qameta.allure:allure-rest-assured:${allureVersion}"
+}
+
+allure {
+    version = allureVersion
+    useJUnit5 {
+        version = allureVersion
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
