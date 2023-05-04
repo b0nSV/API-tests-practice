@@ -13,7 +13,8 @@ import site.nomoreparties.stellarburgers.buiseness_entities.User;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.http.HttpStatus.*;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.jupiter.api.Assertions.*;
 import static site.nomoreparties.stellarburgers.helpers.RandomSequences.*;
 import static site.nomoreparties.stellarburgers.helpers.entities.IngredientTypes.*;
@@ -28,15 +29,15 @@ public class CreateOrderTest extends InitTests {
     OrderCreate order;
 
     @BeforeAll
-    public static void getIngredientsList() {
+    public static void setUp() {
         var user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
         accessToken = userSteps.registerUser(user).getAuthToken();
         ingredientIdsPerType = ingredientSteps.getIngredientIdsPerType();
     }
 
     @Test
-    @DisplayName("Создание заказа без авторизации возвращает статус код 200")
-    public void createOrderWithoutAuthTokenReturnsStatus200Test() {
+    @DisplayName("Можно создать заказ без авторизации")
+    public void canCreateOrderWithoutAuthentication() {
         order = new OrderCreate(List.of(
                 (ingredientIdsPerType.get(TYPE_BUN).get(0)),
                 (ingredientIdsPerType.get(TYPE_MAIN).get(0)),
@@ -47,8 +48,8 @@ public class CreateOrderTest extends InitTests {
     }
 
     @Test
-    @DisplayName("Создание заказа с авторизационным токеном возвращает статус код 200")
-    public void createOrderWithAuthTokenReturnsStatus200Test() {
+    @DisplayName("Можно создать заказ авторизованным пользователем")
+    public void canCreateOrderWithWhenAuthorized() {
         order = new OrderCreate(List.of(
                 (ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse("")),
                 (ingredientIdsPerType.get(TYPE_MAIN).stream().findAny().orElse("")),
@@ -60,46 +61,38 @@ public class CreateOrderTest extends InitTests {
 
     @Test
     @DisplayName("После успешного создания заказа возвращается номер заказа")
-    public void createOrderWithAuthTokenReturnsOrderNumberTest() {
+    public void createNewOrderReturnsOrderNumber() {
         order = new OrderCreate(List.of(
                 (ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse("")),
                 (ingredientIdsPerType.get(TYPE_MAIN).stream().findAny().orElse("")),
                 (ingredientIdsPerType.get(TYPE_SAUCE).stream().findAny().orElse(""))
         ));
         var response = orderSteps.createOrder(order, accessToken);
-        assertNotEquals(0, response.as(OrderCreateResponse.class).getOrder().getNumber());
+        assertNotEquals(0, response.as(OrderCreateResponse.class).getOrder().getNumber(),
+                "Заказ не был создан");
     }
 
     @Test
-    @DisplayName("При создание заказа с несуществующим хэшем ингредиента возвращается статус код 500")
-    public void createOrderWithWrongIngredientHashReturnsStatus500Test() {
+    @DisplayName("При создание заказа с несуществующим хэшем ингредиента возвращается ошибка")
+    public void createOrderWithWrongIngredientHashReturnsError() {
         order = new OrderCreate(List.of("a" + (ingredientIdsPerType.get(TYPE_BUN).get(0).substring(1))));
-        var response = orderSteps.createOrder(order, accessToken);
-        assertEquals(SC_INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
-    @DisplayName("Создание заказа без ингредиентов возвращает статус код 400")
-    public void createOrderWithoutIngredientsReturnsStatus400Test() {
-        order = new OrderCreate(List.of());
         var response = orderSteps.createOrder(order, accessToken);
         assertEquals(SC_BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    @DisplayName("Создание заказа без ингредиентов возвращает сообщение об ошибке")
-    public void createOrderWithoutIngredientsReturnsErrorMessageTest() {
+    @DisplayName("Создание заказа без ингредиентов возвращает ошибку")
+    public void createOrderWithoutIngredientsReturnsError() {
         order = new OrderCreate(List.of());
         var response = orderSteps.createOrder(order, accessToken);
-        assertEquals("Ingredient ids must be provided", response.as(ErrorMessageResponse.class).getMessage());
-    }
-
-    @Test
-    @DisplayName("Создание заказа без ингредиентов возвращает атрибут \"success\":false")
-    public void createOrderWithoutIngredientsReturnsSuccessFalseTest() {
-        order = new OrderCreate(List.of());
-        var response = orderSteps.createOrder(order, accessToken);
-        assertFalse(response.as(ErrorMessageResponse.class).isSuccess());
+        assertAll(
+                () -> assertEquals(SC_BAD_REQUEST, response.getStatusCode()),
+                () -> assertEquals("Ingredient ids must be provided",
+                        response.as(ErrorMessageResponse.class).getMessage(),
+                        "Текст ошибки не соответствует ожидаемому"),
+                () -> assertFalse(response.as(ErrorMessageResponse.class).isSuccess(),
+                        "Значение параметра \"success\" не соответствует ожидаемому")
+        );
     }
 
     @AfterAll

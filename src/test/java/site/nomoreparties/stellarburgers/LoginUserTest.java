@@ -27,18 +27,17 @@ import static site.nomoreparties.stellarburgers.helpers.entities.TestsByUrlName.
 public class LoginUserTest extends InitTests {
 
     static ResponseAndToken positiveLoginResponse;
-    static User user;
+    static final User user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
 
     @BeforeAll
     public static void setupData() {
-        user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
         userSteps.registerUser(user);
         positiveLoginResponse = userSteps.loginUser(new UserCredentials(user));
     }
 
     @Test
     @DisplayName("Успешный логин по существующим кредам пользователя")
-    public void successfullloginWithExistingCredentials() {
+    public void successfulLoginWithExistingCredentials() {
         assertAll(
                 () -> assertEquals(SC_OK, positiveLoginResponse.getResponse().getStatusCode()),
                 () -> assertTrue(positiveLoginResponse.getResponse().as(UserLoginResponse.class).isSuccess()),
@@ -48,29 +47,33 @@ public class LoginUserTest extends InitTests {
     }
 
     @Test
-    @DisplayName("При логине по существующим данным пользователя в теле ответа есть имя пользователя")
-    public void loginUserExistingCredentialsReturnsUserName() {
-        assertEquals(user.getName()
-                , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getName());
+    @DisplayName("При успешном логине в теле ответа также возвращаются данные пользователя")
+    public void successfulLoginReturnsUserInfoInResponse() {
+        assertAll(
+                () -> assertEquals(user.getName()
+                        , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getName(),
+                        "Имя пользователя в ответе не соответствует ожидаемому"),
+                () -> assertEquals(user.getEmail()
+                        , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getEmail(),
+                        "email в ответе не соответствует ожидаемому")
+        );
+
     }
 
-    @Test
-    @DisplayName("При логине по существующим данным пользователя в теле ответа есть email пользователя")
-    public void loginUserExistingCredentialsReturnsUserEmail() {
-        assertEquals(user.getEmail()
-                , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getEmail());
-    }
-
-    @ParameterizedTest
+    @DisplayName("401. Вход по несуществующей связке email + pass.")
+    @ParameterizedTest(name = "\"email\":{0} \"password\":{1}")
     @MethodSource("notAuthorizedLoginArguments")
     public void loginUserWithBadCredentials(String email, String password) {
         var loginResponseAndToken = userSteps.loginUser(new UserCredentials(email, password));
         assertAll(
-                () -> assertNull(loginResponseAndToken.getResponse().getHeader("Authorization")),
+                () -> assertNull(loginResponseAndToken.getResponse().getHeader("Authorization"),
+                        "В ответе вернулся авторизационный токен"),
                 () -> assertEquals(SC_UNAUTHORIZED, loginResponseAndToken.getResponse().getStatusCode()),
-                () -> assertFalse(loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess()),
+                () -> assertFalse(loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess(),
+                        "Значение параметра \"success\" не соответствует ожидаемому"),
                 () -> assertEquals("email or password are incorrect",
-                        loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage())
+                        loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage(),
+                        "Текст ошибки не соответствует ожидаемому")
         );
     }
 

@@ -14,8 +14,7 @@ import java.util.List;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static site.nomoreparties.stellarburgers.helpers.RandomSequences.*;
 import static site.nomoreparties.stellarburgers.helpers.entities.IngredientTypes.*;
 import static site.nomoreparties.stellarburgers.helpers.entities.TestsByUrlName.GET_USER_ORDERS_METHOD_TESTS_NAME;
@@ -27,7 +26,7 @@ public class GetUserOrdersTest extends InitTests {
     static final int countOrder = 3;
 
     @BeforeAll
-    public static void getIngredientsList() {
+    public static void setUp() {
         var user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
         accessToken = userSteps.registerUser(user).getAuthToken();
         var ingredientIdsPerType = ingredientSteps.getIngredientIdsPerType();
@@ -43,39 +42,32 @@ public class GetUserOrdersTest extends InitTests {
     }
 
     @Test
-    @DisplayName("В теле ответа количество заказов соответствует количество созданных пользователем заказов")
-    public void getUserOrdersWithAuthTokenReturnsOrdersTest() {
+    @DisplayName("В списке заказов пользователя возвращаются все созданные заказы")
+    public void getUserOrdersReturnsAllCreatedOrders() {
         var getOrdersListResponse = orderSteps.getOrders(accessToken);
-        assertEquals(countOrder, getOrdersListResponse.as(OrderList.class).getOrders().size());
+        assertEquals(countOrder, getOrdersListResponse.as(OrderList.class).getOrders().size(),
+                "Количество созданных заказов в ответе не соответствует ожидаемому");
     }
 
     @Test
     @DisplayName("При получении списка заказов с авторизационным токеном возвращается статус код 200")
-    public void getUserOrdersWithAuthTokenReturnsStatus200Test() {
+    public void getUserOrdersWithAuthTokenReturnsStatus200() {
         var getOrdersListResponse = orderSteps.getOrders(accessToken);
         assertEquals(SC_OK, getOrdersListResponse.getStatusCode());
     }
 
     @Test
-    @DisplayName("При получении списка заказов без авторизационного токена возвращается статус код 401")
-    public void getUserOrdersWithoutAuthTokenReturnsStatus401Test() {
+    @DisplayName("401. Запрос списка заказов пользователя без авторизационного токена")
+    public void getUserOrdersWithoutAuthTokenReturnsError() {
         var getOrdersListResponse = orderSteps.getOrders(null);
-        assertEquals(SC_UNAUTHORIZED, getOrdersListResponse.getStatusCode());
-    }
-
-    @Test
-    @DisplayName("При получении списка заказов без авторизационного токена возвращается сообщение об ошибке")
-    public void getUserOrdersWithoutAuthTokenReturnsErrorMessageTest() {
-        var getOrdersListResponse = orderSteps.getOrders(null);
-        assertEquals("You should be authorised",
-                getOrdersListResponse.as(ErrorMessageResponse.class).getMessage());
-    }
-
-    @Test
-    @DisplayName("При получении списка заказов без авторизационного токена возвращается атрибут \"success\": false")
-    public void getUserOrdersWithoutAuthTokenReturnsSuccessFalseTest() {
-        var getOrdersListResponse = orderSteps.getOrders(null);
-        assertFalse(getOrdersListResponse.as(ErrorMessageResponse.class).isSuccess());
+        assertAll(
+                () -> assertEquals(SC_UNAUTHORIZED, getOrdersListResponse.getStatusCode()),
+                () -> assertEquals("You should be authorised",
+                        getOrdersListResponse.as(ErrorMessageResponse.class).getMessage(),
+                        "Текст ошибки не соответствует ожидаемому"),
+                () -> assertFalse(getOrdersListResponse.as(ErrorMessageResponse.class).isSuccess(),
+                        "Значение параметра \"success\" не соответствует ожидаемому")
+        );
     }
 
     @AfterAll

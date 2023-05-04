@@ -16,7 +16,7 @@ import static site.nomoreparties.stellarburgers.helpers.entities.TestsByUrlName.
 @Feature(PARTIAL_UPDATE_USER_METHOD_TESTS_NAME)
 public class PatchUserTest extends InitTests {
 
-    static User randomUser = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
+    static final User randomUser = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
     static String accessToken;
     String anotherUserAccessToken;
 
@@ -27,27 +27,24 @@ public class PatchUserTest extends InitTests {
 
     @Test
     @DisplayName("При успешном обновлении данных пользователя возвращается статус код 200")
-    public void patchUserWithTokenReturnsStatus200Test() {
+    public void successfulPatchUserReturnsStatus200() {
         var newUserData = new User("new" + randomUser.getEmail(), null, null);
         Response response = userSteps.patchUser(newUserData, accessToken);
-        assertEquals(SC_OK, response.getStatusCode());
-    }
-
-    @Test
-    @DisplayName("При успешном обновлении данных пользователя возвращается \"success\": true")
-    public void patchUserWithTokenReturnsSuccessTrueTest() {
-        var newUserData = new User("new" + randomUser.getEmail(), null, null);
-        var patchUserResponse = userSteps.patchUser(newUserData, accessToken).as(UserPatchResponse.class);
-        assertTrue(patchUserResponse.isSuccess());
+        assertAll(
+                () -> assertEquals(SC_OK, response.getStatusCode()),
+                () -> assertTrue(response.as(UserPatchResponse.class).isSuccess(),
+                        "Значение параметра \"success\" не соответствует ожидаемому")
+        );
     }
 
     @Test
     @DisplayName("При успешном обновлении email пользователя в теле ответа возвращается новый email")
-    public void patchUserEmailReturnsNewEmailTest() {
+    public void patchUserEmailReturnsNewEmail() {
         var newEmail = "new" + randomUser.getEmail();
         var newUserData = new User(newEmail, null, null);
         var patchUserResponse = userSteps.patchUser(newUserData, accessToken).as(UserPatchResponse.class);
-        assertEquals(newEmail, patchUserResponse.getUser().getEmail());
+        assertEquals(newEmail, patchUserResponse.getUser().getEmail(),
+                "Вернулся не новый email");
     }
 
     @Test
@@ -56,52 +53,45 @@ public class PatchUserTest extends InitTests {
         var newName = "новый" + randomUser.getName();
         var newUserData = new User(null, null, newName);
         var patchUserResponse = userSteps.patchUser(newUserData, accessToken).as(UserPatchResponse.class);
-        assertEquals(newName, patchUserResponse.getUser().getName());
+        assertEquals(newName, patchUserResponse.getUser().getName(),
+                "Вернулось не новое имя");
     }
 
     @Test
     @DisplayName("При успешном обновлении пароля пользователя в теле ответа не возвращается новый пароль")
-    public void patchUserPasswordDoNotReturnsPasswordTest() {
+    public void newPasswordDoesNotReturnInResponse() {
         var newPassword = createRandomPassword(9);
         var newUserData = new User(null, newPassword, null);
         var patchUserResponse = userSteps.patchUser(newUserData, accessToken).as(UserPatchResponse.class);
-        assertNull(patchUserResponse.getUser().getPassword());
+        assertNull(patchUserResponse.getUser().getPassword(), "В ответе вернулся новый пароль");
     }
 
     @Test
-    @DisplayName("При обновлении данных пользователя без авторизационного токена возвращается статус код 401")
-    public void patchUserWithoutTokenReturnsStatus401Test() {
+    @DisplayName("401. Запрос обновления данных пользователя без авторизационного токена")
+    public void patchUserWithoutTokenReturnsError() {
         var newPassword = createRandomPassword(9);
         var newUserData = new User(null, newPassword, null);
-        var patchUserResponse = userSteps.patchUser(newUserData, null);
-        assertEquals(SC_UNAUTHORIZED, patchUserResponse.getStatusCode());
+        var response = userSteps.patchUser(newUserData, null);
+        assertAll(
+                () -> assertEquals(SC_UNAUTHORIZED, response.getStatusCode()),
+                () -> assertEquals("You should be authorised", response.as(ErrorMessageResponse.class).getMessage(),
+                        "Текст ошибки не соответствует ожидаемому")
+        );
     }
 
     @Test
-    @DisplayName("При обновлении данных пользователя без авторизационного токена возвращается сообщение об ошибке")
-    public void patchUserWithoutTokenReturnsErrorMessageTest() {
-        var newPassword = createRandomPassword(9);
-        var newUserData = new User(null, newPassword, null);
-        var patchUserResponse = userSteps.patchUser(newUserData, null).as(ErrorMessageResponse.class);
-        assertEquals("You should be authorised", patchUserResponse.getMessage());
-    }
-
-    @Test
-    @DisplayName("При попытке обновить email значением принадлежащим другому пользователя статус код ответа 403")
-    public void patchUserUsingAnotherUserEmailReturns403Test() {
+    @DisplayName("403. Обновление email значением, принадлежащим другому пользователю, запрещено")
+    public void pathEmailWithOwnedByAnotherUserValueNotAvailable() {
         var anotherRandomUser = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
         anotherUserAccessToken = userSteps.registerUser(anotherRandomUser).getAuthToken();
-        var patchUserResponse = userSteps.patchUser(new User(anotherRandomUser.getEmail(), null, null), accessToken);
-        assertEquals(SC_FORBIDDEN, patchUserResponse.getStatusCode());
-    }
+        var response = userSteps.patchUser(new User(anotherRandomUser.getEmail(), null, null), accessToken);
+        assertAll(
+                () -> assertEquals(SC_FORBIDDEN, response.getStatusCode()),
+                () -> assertEquals("User with such email already exists",
+                        response.as(ErrorMessageResponse.class).getMessage(),
+                        "Текст ошибки не соответствует ожидаемому")
+        );
 
-    @Test
-    @DisplayName("При попытке обновить email значением, принадлежащим другому пользователя, возвращается сообщение об ошибке")
-    public void patchUserUsingAnotherUserEmailReturnsErrorMessageTest() {
-        var anotherRandomUser = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
-        anotherUserAccessToken = userSteps.registerUser(anotherRandomUser).getAuthToken();
-        var patchUserResponse = userSteps.patchUser(new User(anotherRandomUser.getEmail(), null, null), accessToken);
-        assertEquals("User with such email already exists", patchUserResponse.as(ErrorMessageResponse.class).getMessage());
     }
 
     @AfterEach
