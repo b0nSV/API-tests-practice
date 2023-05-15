@@ -3,10 +3,10 @@ package site.nomoreparties.stellarburgers.steps;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import site.nomoreparties.stellarburgers.BaseApiSpecs;
 import site.nomoreparties.stellarburgers.buiseness_entities.User;
 import site.nomoreparties.stellarburgers.buiseness_entities.UserCredentials;
 import site.nomoreparties.stellarburgers.buiseness_entities.UserLoginResponse;
+import site.nomoreparties.stellarburgers.config.BaseApiSpecs;
 import site.nomoreparties.stellarburgers.helpers.entities.ResponseAndToken;
 
 import static io.restassured.RestAssured.given;

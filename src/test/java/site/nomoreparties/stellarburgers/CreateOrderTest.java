@@ -16,8 +16,8 @@ import java.util.Map;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.jupiter.api.Assertions.*;
+import static site.nomoreparties.stellarburgers.buiseness_entities.IngredientTypes.*;
 import static site.nomoreparties.stellarburgers.helpers.RandomSequences.*;
-import static site.nomoreparties.stellarburgers.helpers.entities.IngredientTypes.*;
 import static site.nomoreparties.stellarburgers.helpers.entities.TestsByUrlName.CREATE_ORDER_METHOD_TESTS_NAME;
 
 
@@ -39,9 +39,9 @@ public class CreateOrderTest extends InitTests {
     @DisplayName("Можно создать заказ без авторизации")
     public void canCreateOrderWithoutAuthentication() {
         order = new OrderCreate(List.of(
-                (ingredientIdsPerType.get(TYPE_BUN).get(0)),
-                (ingredientIdsPerType.get(TYPE_MAIN).get(0)),
-                (ingredientIdsPerType.get(TYPE_SAUCE).get(0))
+                (ingredientIdsPerType.get(TYPE_BUN.getName()).get(0)),
+                (ingredientIdsPerType.get(TYPE_MAIN.getName()).get(0)),
+                (ingredientIdsPerType.get(TYPE_SAUCE.getName()).get(0))
         ));
         var response = orderSteps.createOrder(order, null);
         assertEquals(SC_OK, response.getStatusCode());
@@ -51,9 +51,9 @@ public class CreateOrderTest extends InitTests {
     @DisplayName("Можно создать заказ авторизованным пользователем")
     public void canCreateOrderWithWhenAuthorized() {
         order = new OrderCreate(List.of(
-                (ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse("")),
-                (ingredientIdsPerType.get(TYPE_MAIN).stream().findAny().orElse("")),
-                (ingredientIdsPerType.get(TYPE_SAUCE).stream().findAny().orElse(""))
+                (ingredientIdsPerType.get(TYPE_BUN.getName()).stream().findAny().orElse("")),
+                (ingredientIdsPerType.get(TYPE_MAIN.getName()).stream().findAny().orElse("")),
+                (ingredientIdsPerType.get(TYPE_SAUCE.getName()).stream().findAny().orElse(""))
         ));
         var response = orderSteps.createOrder(order, accessToken);
         assertEquals(SC_OK, response.getStatusCode());
@@ -63,9 +63,9 @@ public class CreateOrderTest extends InitTests {
     @DisplayName("После успешного создания заказа возвращается номер заказа")
     public void createNewOrderReturnsOrderNumber() {
         order = new OrderCreate(List.of(
-                (ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse("")),
-                (ingredientIdsPerType.get(TYPE_MAIN).stream().findAny().orElse("")),
-                (ingredientIdsPerType.get(TYPE_SAUCE).stream().findAny().orElse(""))
+                (ingredientIdsPerType.get(TYPE_BUN.getName()).stream().findAny().orElse("")),
+                (ingredientIdsPerType.get(TYPE_MAIN.getName()).stream().findAny().orElse("")),
+                (ingredientIdsPerType.get(TYPE_SAUCE.getName()).stream().findAny().orElse(""))
         ));
         var response = orderSteps.createOrder(order, accessToken);
         assertNotEquals(0, response.as(OrderCreateResponse.class).getOrder().getNumber(),
@@ -75,7 +75,7 @@ public class CreateOrderTest extends InitTests {
     @Test
     @DisplayName("При создание заказа с несуществующим хэшем ингредиента возвращается ошибка")
     public void createOrderWithWrongIngredientHashReturnsError() {
-        order = new OrderCreate(List.of("a" + (ingredientIdsPerType.get(TYPE_BUN).get(0).substring(1))));
+        order = new OrderCreate(List.of("a" + (ingredientIdsPerType.get(TYPE_BUN.getName()).get(0).substring(1))));
         var response = orderSteps.createOrder(order, accessToken);
         assertEquals(SC_BAD_REQUEST, response.getStatusCode());
     }

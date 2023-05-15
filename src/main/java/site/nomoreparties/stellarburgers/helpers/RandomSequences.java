@@ -30,7 +30,8 @@ public class RandomSequences {
     }
 
     public static String getRandomEmail() {
-        return createRandomPassword(4) + enFaker.internet().safeEmailAddress();
+        return createRandomPassword(4).toLowerCase().replace("@", "") +
+                enFaker.internet().safeEmailAddress();
     }
 
 }
