@@ -1,6 +1,7 @@
 package site.nomoreparties.stellarburgers;
 
 import io.qameta.allure.Feature;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import site.nomoreparties.stellarburgers.buiseness_entities.ErrorMessageResponse;
 import site.nomoreparties.stellarburgers.buiseness_entities.User;
 import site.nomoreparties.stellarburgers.buiseness_entities.UserLoginResponse;
-import site.nomoreparties.stellarburgers.helpers.entities.ResponseAndToken;
 
 import java.util.stream.Stream;
 
@@ -26,25 +26,25 @@ import static site.nomoreparties.stellarburgers.helpers.entities.TestsByUrlName.
 public class RegisterUserTest extends InitTests {
 
     User user;
-    ResponseAndToken registerResponseAndToken;
-    ResponseAndToken repeatedRegisterResponseAndToken;
+    Response registerResponse;
+    Response repeatedRegisterResponse;
 
     @BeforeEach
     public void registerRandomUser() {
         user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
-        registerResponseAndToken = userSteps.registerUser(user);
+        registerResponse = userSteps.registerUser(user);
     }
 
     @Test
     @DisplayName("Успешная регистрация пользователя")
     public void successfulRegistrationWithAllRequiredParams() {
         assertAll(
-                () -> assertEquals(SC_OK, registerResponseAndToken.getResponse().getStatusCode()),
-                () -> assertTrue(registerResponseAndToken.getResponse().as(UserLoginResponse.class).isSuccess(),
+                () -> assertEquals(SC_OK, registerResponse.getStatusCode()),
+                () -> assertTrue(registerResponse.as(UserLoginResponse.class).isSuccess(),
                         "Значение параметра \"success\" не соответствует ожидаемому"),
-                () -> assertNotNull(registerResponseAndToken.getResponse().as(UserLoginResponse.class).getAccessToken(),
+                () -> assertNotNull(registerResponse.as(UserLoginResponse.class).getAccessToken(),
                         "В теле ответа не вернулся токен доступа (accessToken)"),
-                () -> assertNotNull(registerResponseAndToken.getResponse().as(UserLoginResponse.class).getRefreshToken(),
+                () -> assertNotNull(registerResponse.as(UserLoginResponse.class).getRefreshToken(),
                         "В теле ответа не вернулся рефреш токен (refreshToken)")
         );
     }
@@ -54,10 +54,10 @@ public class RegisterUserTest extends InitTests {
     public void successfulRegistrationReturnsUserInfoInResponse() {
         assertAll(
                 () -> assertEquals(user.getEmail(),
-                        registerResponseAndToken.getResponse().as(UserLoginResponse.class).getUser().getEmail(),
+                        registerResponse.as(UserLoginResponse.class).getUser().getEmail(),
                         "В ответе не вернулся email"),
                 () -> assertEquals(user.getName()
-                        , registerResponseAndToken.getResponse().as(UserLoginResponse.class).getUser().getName(),
+                        , registerResponse.as(UserLoginResponse.class).getUser().getName(),
                         "В ответе не вернулось имя")
         );
     }
@@ -67,13 +67,13 @@ public class RegisterUserTest extends InitTests {
     @MethodSource("noRequiredParamsForLoginArguments")
     public void registerWithoutRequiredParamsThrowsError(String email, String password, String name) {
         var user = new User(email, password, name);
-        var responseAndToken = userSteps.registerUser(user);
+        var response = userSteps.registerUser(user);
         assertAll(
-                () -> assertEquals(SC_FORBIDDEN, responseAndToken.getResponse().getStatusCode()),
+                () -> assertEquals(SC_FORBIDDEN, response.getStatusCode()),
                 () -> assertEquals("Email, password and name are required fields"
-                        , responseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage(),
+                        , response.as(ErrorMessageResponse.class).getMessage(),
                         "Текст ошибки не соответствует ожидаемому"),
-                () -> assertFalse(responseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess(),
+                () -> assertFalse(response.as(ErrorMessageResponse.class).isSuccess(),
                         "Значение параметра \"success\" не соответствует ожидаемому")
         );
     }
@@ -93,13 +93,13 @@ public class RegisterUserTest extends InitTests {
     @Test
     @DisplayName("403. Регистрации по уже существующим данным пользователя")
     public void registerUserByExistingUserDataReturnsError() {
-        repeatedRegisterResponseAndToken = userSteps.registerUser(user);
+        repeatedRegisterResponse = userSteps.registerUser(user);
         assertAll(
-                () -> assertEquals(SC_FORBIDDEN, repeatedRegisterResponseAndToken.getResponse().getStatusCode()),
-                () -> assertFalse(repeatedRegisterResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess(),
+                () -> assertEquals(SC_FORBIDDEN, repeatedRegisterResponse.getStatusCode()),
+                () -> assertFalse(repeatedRegisterResponse.as(ErrorMessageResponse.class).isSuccess(),
                         "Значение параметра \"success\" не соответствует ожидаемому"),
                 () -> assertEquals("User already exists"
-                        , repeatedRegisterResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage(),
+                        , repeatedRegisterResponse.as(ErrorMessageResponse.class).getMessage(),
                         "Текст ошибки не соответствует ожидаемому")
         );
     }
@@ -107,25 +107,29 @@ public class RegisterUserTest extends InitTests {
     @Test
     @DisplayName("403. Регистрация с использованием существующего email")
     public void registerUserWithExistingEmailReturnsError() {
-        repeatedRegisterResponseAndToken = userSteps.registerUser(new User(user.getEmail(), createRandomPassword(8), getRandomName()));
+        repeatedRegisterResponse = userSteps.registerUser(new User(user.getEmail(), createRandomPassword(8), getRandomName()));
         assertAll(
-                () -> assertEquals(SC_FORBIDDEN, repeatedRegisterResponseAndToken.getResponse().getStatusCode()),
-                () -> assertFalse(repeatedRegisterResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess(),
+                () -> assertEquals(SC_FORBIDDEN, repeatedRegisterResponse.getStatusCode()),
+                () -> assertFalse(repeatedRegisterResponse.as(ErrorMessageResponse.class).isSuccess(),
                         "Значение параметра \"success\" не соответствует ожидаемому"),
                 () -> assertEquals("User already exists"
-                        , repeatedRegisterResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage(),
+                        , repeatedRegisterResponse.as(ErrorMessageResponse.class).getMessage(),
                         "Текст ошибки не соответствует ожидаемому")
         );
     }
 
     @AfterEach
     public void deleteCreatedUser() {
-        if (registerResponseAndToken.getAuthToken() != null)
-            userSteps.deleteUser(registerResponseAndToken.getAuthToken());
-        // Удалить пользователя, если он был создан с использованием данных существующего пользователя
-        if (repeatedRegisterResponseAndToken != null && repeatedRegisterResponseAndToken.getAuthToken() != null) {
-            userSteps.deleteUser(registerResponseAndToken.getAuthToken());
-        }
+        var registerToken = registerResponse.as(UserLoginResponse.class).getAccessToken();
+        //var repeatedRegisterToken = repeatedRegisterResponse.as(UserLoginResponse.class).getAccessToken();
+        String repeatedRegisterToken = null;
+        if (registerToken != null)
+            userSteps.deleteUser(registerToken);
+        // Удалить пользователя, если он все таки был создан с использованием данных существующего пользователя
+        if (repeatedRegisterResponse != null)
+            repeatedRegisterToken = repeatedRegisterResponse.as(UserLoginResponse.class)
+                    .getAccessToken();
+        if (repeatedRegisterToken != null) userSteps.deleteUser(repeatedRegisterToken);
     }
 
 }

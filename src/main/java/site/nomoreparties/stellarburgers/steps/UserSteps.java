@@ -5,9 +5,7 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import site.nomoreparties.stellarburgers.buiseness_entities.User;
 import site.nomoreparties.stellarburgers.buiseness_entities.UserCredentials;
-import site.nomoreparties.stellarburgers.buiseness_entities.UserLoginResponse;
 import site.nomoreparties.stellarburgers.config.BaseApiSpecs;
-import site.nomoreparties.stellarburgers.helpers.entities.ResponseAndToken;
 
 import static io.restassured.RestAssured.given;
 
@@ -18,13 +16,12 @@ public class UserSteps extends BaseApiSpecs {
     public static final String COURIER_URL = "/auth/user";
 
     @Step("Зарегистрировать пользователя")
-    public ResponseAndToken registerUser(User user) {
-        var response = given()
+    public Response registerUser(User user) {
+        return given()
                 .spec(getReqSpecWithBody(ContentType.JSON)).and()
                 .body(user)
                 .when()
                 .post(REGISTER_COURIER_URL);
-        return new ResponseAndToken(response, response.as(UserLoginResponse.class).getAccessToken());
     }
 
     @Step("Обновить данные о пользователе")
@@ -44,12 +41,11 @@ public class UserSteps extends BaseApiSpecs {
     }
 
     @Step("Выполнить вход")
-    public ResponseAndToken loginUser(UserCredentials userCredentials) {
-        var response = given()
+    public Response loginUser(UserCredentials userCredentials) {
+        return given()
                 .spec(getReqSpecWithBody(ContentType.JSON)).and()
                 .body(userCredentials)
                 .when()
                 .post(LOGIN_COURIER_URL);
-        return new ResponseAndToken(response, response.as(UserLoginResponse.class).getAccessToken());
     }
 }
