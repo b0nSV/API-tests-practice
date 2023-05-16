@@ -21,7 +21,6 @@ import static site.nomoreparties.stellarburgers.buiseness_entities.IngredientTyp
 import static site.nomoreparties.stellarburgers.helpers.RandomSequences.*;
 import static site.nomoreparties.stellarburgers.helpers.entities.TestsByUrlName.CREATE_ORDER_METHOD_TESTS_NAME;
 
-
 @Feature(CREATE_ORDER_METHOD_TESTS_NAME)
 public class CreateOrderTest extends InitTests {
 
@@ -40,11 +39,7 @@ public class CreateOrderTest extends InitTests {
     @Test
     @DisplayName("Можно создать заказ без авторизации")
     public void canCreateOrderWithoutAuthentication() {
-        order = new OrderCreate(List.of(
-                (ingredientIdsPerType.get(TYPE_BUN.getName()).get(0)),
-                (ingredientIdsPerType.get(TYPE_MAIN.getName()).get(0)),
-                (ingredientIdsPerType.get(TYPE_SAUCE.getName()).get(0))
-        ));
+        order = orderWithEachTypeOfIngredient();
         var response = orderSteps.createOrder(order, null);
         assertEquals(SC_OK, response.getStatusCode());
     }
@@ -52,11 +47,7 @@ public class CreateOrderTest extends InitTests {
     @Test
     @DisplayName("Можно создать заказ авторизованным пользователем")
     public void canCreateOrderWithWhenAuthorized() {
-        order = new OrderCreate(List.of(
-                (ingredientIdsPerType.get(TYPE_BUN.getName()).stream().findAny().orElse("")),
-                (ingredientIdsPerType.get(TYPE_MAIN.getName()).stream().findAny().orElse("")),
-                (ingredientIdsPerType.get(TYPE_SAUCE.getName()).stream().findAny().orElse(""))
-        ));
+        order = orderWithEachTypeOfIngredient();
         var response = orderSteps.createOrder(order, accessToken);
         assertEquals(SC_OK, response.getStatusCode());
     }
@@ -64,11 +55,7 @@ public class CreateOrderTest extends InitTests {
     @Test
     @DisplayName("После успешного создания заказа возвращается номер заказа")
     public void createNewOrderReturnsOrderNumber() {
-        order = new OrderCreate(List.of(
-                (ingredientIdsPerType.get(TYPE_BUN.getName()).stream().findAny().orElse("")),
-                (ingredientIdsPerType.get(TYPE_MAIN.getName()).stream().findAny().orElse("")),
-                (ingredientIdsPerType.get(TYPE_SAUCE.getName()).stream().findAny().orElse(""))
-        ));
+        order = orderWithEachTypeOfIngredient();
         var response = orderSteps.createOrder(order, accessToken);
         assertNotEquals(0, response.as(OrderCreateResponse.class).getOrder().getNumber(),
                 "Заказ не был создан");
@@ -77,7 +64,8 @@ public class CreateOrderTest extends InitTests {
     @Test
     @DisplayName("При создание заказа с несуществующим хэшем ингредиента возвращается ошибка")
     public void createOrderWithWrongIngredientHashReturnsError() {
-        order = new OrderCreate(List.of("a" + (ingredientIdsPerType.get(TYPE_BUN.getName()).get(0).substring(1))));
+        order = new OrderCreate(List.of("a" + ingredientIdsPerType.get(TYPE_BUN.getName()).stream().findAny()
+                .orElseThrow(() -> new TestAbortedException("В доступных ингредиентах нет булок")).substring(1)));
         var response = orderSteps.createOrder(order, accessToken);
         assertEquals(SC_BAD_REQUEST, response.getStatusCode());
     }
@@ -100,6 +88,17 @@ public class CreateOrderTest extends InitTests {
     @AfterAll
     public static void deleteCourierAfterTests() {
         if (accessToken != null) userSteps.deleteUser(accessToken);
+    }
+
+    private OrderCreate orderWithEachTypeOfIngredient() {
+        return new OrderCreate(List.of(
+                ingredientIdsPerType.get(TYPE_BUN.getName()).stream().findAny()
+                        .orElseThrow(() -> new TestAbortedException("В доступных ингредиентах нет булок")),
+                ingredientIdsPerType.get(TYPE_MAIN.getName()).stream().findAny()
+                        .orElseThrow(() -> new TestAbortedException("В доступных ингредиентах нет начинок")),
+                ingredientIdsPerType.get(TYPE_SAUCE.getName()).stream().findAny()
+                        .orElseThrow(() -> new TestAbortedException("В доступных ингредиентах нет соусов"))
+        ));
     }
 
 }
