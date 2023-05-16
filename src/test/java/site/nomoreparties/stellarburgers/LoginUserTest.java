@@ -1,6 +1,7 @@
 package site.nomoreparties.stellarburgers;
 
 import io.qameta.allure.Feature;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +13,6 @@ import site.nomoreparties.stellarburgers.buiseness_entities.ErrorMessageResponse
 import site.nomoreparties.stellarburgers.buiseness_entities.User;
 import site.nomoreparties.stellarburgers.buiseness_entities.UserCredentials;
 import site.nomoreparties.stellarburgers.buiseness_entities.UserLoginResponse;
-import site.nomoreparties.stellarburgers.helpers.entities.ResponseAndToken;
 
 import java.util.stream.Stream;
 
@@ -26,23 +26,23 @@ import static site.nomoreparties.stellarburgers.helpers.entities.TestsByUrlName.
 @Feature(LOGIN_USER_METHOD_TESTS_NAME)
 public class LoginUserTest extends InitTests {
 
-    static ResponseAndToken positiveLoginResponse;
+    static Response successfullLoginResponse;
     static final User user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
 
     @BeforeAll
     public static void setupData() {
         userSteps.registerUser(user);
-        positiveLoginResponse = userSteps.loginUser(new UserCredentials(user));
+        successfullLoginResponse = userSteps.loginUser(new UserCredentials(user));
     }
 
     @Test
     @DisplayName("Успешный логин по существующим кредам пользователя")
     public void successfulLoginWithExistingCredentials() {
         assertAll(
-                () -> assertEquals(SC_OK, positiveLoginResponse.getResponse().getStatusCode()),
-                () -> assertTrue(positiveLoginResponse.getResponse().as(UserLoginResponse.class).isSuccess()),
-                () -> assertNotNull(positiveLoginResponse.getResponse().as(UserLoginResponse.class).getAccessToken()),
-                () -> assertNotNull(positiveLoginResponse.getResponse().as(UserLoginResponse.class).getRefreshToken())
+                () -> assertEquals(SC_OK, successfullLoginResponse.getStatusCode()),
+                () -> assertTrue(successfullLoginResponse.as(UserLoginResponse.class).isSuccess()),
+                () -> assertNotNull(successfullLoginResponse.as(UserLoginResponse.class).getAccessToken()),
+                () -> assertNotNull(successfullLoginResponse.as(UserLoginResponse.class).getRefreshToken())
         );
     }
 
@@ -51,10 +51,10 @@ public class LoginUserTest extends InitTests {
     public void successfulLoginReturnsUserInfoInResponse() {
         assertAll(
                 () -> assertEquals(user.getName()
-                        , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getName(),
+                        , successfullLoginResponse.as(UserLoginResponse.class).getUser().getName(),
                         "Имя пользователя в ответе не соответствует ожидаемому"),
                 () -> assertEquals(user.getEmail()
-                        , positiveLoginResponse.getResponse().as(UserLoginResponse.class).getUser().getEmail(),
+                        , successfullLoginResponse.as(UserLoginResponse.class).getUser().getEmail(),
                         "email в ответе не соответствует ожидаемому")
         );
 
@@ -64,15 +64,15 @@ public class LoginUserTest extends InitTests {
     @ParameterizedTest(name = "\"email\":{0} \"password\":{1}")
     @MethodSource("notAuthorizedLoginArguments")
     public void loginUserWithBadCredentials(String email, String password) {
-        var loginResponseAndToken = userSteps.loginUser(new UserCredentials(email, password));
+        var loginResponse = userSteps.loginUser(new UserCredentials(email, password));
         assertAll(
-                () -> assertNull(loginResponseAndToken.getResponse().getHeader("Authorization"),
+                () -> assertNull(loginResponse.getHeader("Authorization"),
                         "В ответе вернулся авторизационный токен"),
-                () -> assertEquals(SC_UNAUTHORIZED, loginResponseAndToken.getResponse().getStatusCode()),
-                () -> assertFalse(loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).isSuccess(),
+                () -> assertEquals(SC_UNAUTHORIZED, loginResponse.getStatusCode()),
+                () -> assertFalse(loginResponse.as(ErrorMessageResponse.class).isSuccess(),
                         "Значение параметра \"success\" не соответствует ожидаемому"),
                 () -> assertEquals("email or password are incorrect",
-                        loginResponseAndToken.getResponse().as(ErrorMessageResponse.class).getMessage(),
+                        loginResponse.as(ErrorMessageResponse.class).getMessage(),
                         "Текст ошибки не соответствует ожидаемому")
         );
     }
@@ -90,7 +90,8 @@ public class LoginUserTest extends InitTests {
 
     @AfterAll
     public static void tearDown() {
-        if (positiveLoginResponse.getAuthToken() != null) userSteps.deleteUser(positiveLoginResponse.getAuthToken());
+        var accessToken = successfullLoginResponse.as(UserLoginResponse.class).getAccessToken();
+        if (accessToken != null) userSteps.deleteUser(accessToken);
     }
 
 }

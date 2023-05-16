@@ -4,8 +4,10 @@ package site.nomoreparties.stellarburgers;
 import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
+import org.opentest4j.TestAbortedException;
 import site.nomoreparties.stellarburgers.buiseness_entities.ErrorMessageResponse;
 import site.nomoreparties.stellarburgers.buiseness_entities.User;
+import site.nomoreparties.stellarburgers.buiseness_entities.UserLoginResponse;
 import site.nomoreparties.stellarburgers.buiseness_entities.UserPatchResponse;
 
 import static org.apache.http.HttpStatus.*;
@@ -22,7 +24,8 @@ public class PatchUserTest extends InitTests {
 
     @BeforeAll
     public static void registerRandomUser() {
-        accessToken = userSteps.registerUser(randomUser).getAuthToken();
+        accessToken = registerUserAndGetAccessToken(randomUser)
+                .orElseThrow(() -> new TestAbortedException("Возникла ошибка при получении токена доступа"));
     }
 
     @Test
@@ -83,7 +86,7 @@ public class PatchUserTest extends InitTests {
     @DisplayName("403. Обновление email значением, принадлежащим другому пользователю, запрещено")
     public void pathEmailWithOwnedByAnotherUserValueNotAvailable() {
         var anotherRandomUser = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
-        anotherUserAccessToken = userSteps.registerUser(anotherRandomUser).getAuthToken();
+        anotherUserAccessToken = userSteps.registerUser(anotherRandomUser).as(UserLoginResponse.class).getAccessToken();
         var response = userSteps.patchUser(new User(anotherRandomUser.getEmail(), null, null), accessToken);
         assertAll(
                 () -> assertEquals(SC_FORBIDDEN, response.getStatusCode()),

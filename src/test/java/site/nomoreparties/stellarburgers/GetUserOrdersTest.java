@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.TestAbortedException;
 import site.nomoreparties.stellarburgers.buiseness_entities.ErrorMessageResponse;
 import site.nomoreparties.stellarburgers.buiseness_entities.OrderCreate;
 import site.nomoreparties.stellarburgers.buiseness_entities.OrderList;
@@ -28,7 +29,9 @@ public class GetUserOrdersTest extends InitTests {
     @BeforeAll
     public static void setUp() {
         var user = new User(getRandomEmail(), createRandomPassword(8), getRandomName());
-        accessToken = userSteps.registerUser(user).getAuthToken();
+        accessToken = registerUserAndGetAccessToken(user)
+                .orElseThrow(() -> new TestAbortedException("Возникла ошибка при получении токена доступа"));
+
         var ingredientIdsPerType = ingredientSteps.getIngredientIdsPerType();
         var order = new OrderCreate(List.of(
                 ingredientIdsPerType.get(TYPE_BUN.getName()).stream().findAny().orElse(""),
