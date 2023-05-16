@@ -4,4 +4,4 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 
-rootProject.name = 'qa-java-diplom-2'
+rootProject.name = 'api-tests-practice'

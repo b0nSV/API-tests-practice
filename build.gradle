@@ -5,7 +5,7 @@ plugins {
 
 group 'site.nomoreparties.stellarburgers'
 version '2.0.0'
-description 'qa-java-diplom2'
+description 'api-tests-practice'
 
 repositories {
     mavenCentral()
