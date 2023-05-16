@@ -37,7 +37,7 @@ dependencies {
     testImplementation "org.assertj:assertj-core:3.24.2"
     // Java-Faker
     implementation "com.github.javafaker:javafaker:1.0.2"
-    // Owner https://matteobaccan.github.io/owner/docs/variables-expansion/
+    // Owner
     implementation "org.aeonbits.owner:owner:1.0.12"
     // Без него не заводятся тесты на 17 версии java
     runtimeOnly "org.aspectj:aspectjweaver:1.9.19"
@@ -50,11 +50,16 @@ dependencies {
 
 allure {
     version = allureVersion
-    useJUnit5 {
-        version = allureVersion
-    }
 }
 
 test {
+    if (System.getProperty("stand") == null) System.setProperty("stand", "stage")
+
+    systemProperty "stand", System.getProperty("stand")
+
+    println("#")
+    printf("# Running tests on stand=%s\n", System.getProperty("stand"))
+    println("#")
+
     useJUnitPlatform()
 }

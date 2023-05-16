@@ -15,15 +15,15 @@ import java.util.List;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.junit.jupiter.api.Assertions.*;
+import static site.nomoreparties.stellarburgers.buiseness_entities.IngredientTypes.*;
 import static site.nomoreparties.stellarburgers.helpers.RandomSequences.*;
-import static site.nomoreparties.stellarburgers.helpers.entities.IngredientTypes.*;
 import static site.nomoreparties.stellarburgers.helpers.entities.TestsByUrlName.GET_USER_ORDERS_METHOD_TESTS_NAME;
 
 @Feature(GET_USER_ORDERS_METHOD_TESTS_NAME)
 public class GetUserOrdersTest extends InitTests {
 
     static String accessToken;
-    static final int countOrder = 3;
+    static final int ORDER_COUNT = 3;
 
     @BeforeAll
     public static void setUp() {
@@ -31,12 +31,12 @@ public class GetUserOrdersTest extends InitTests {
         accessToken = userSteps.registerUser(user).getAuthToken();
         var ingredientIdsPerType = ingredientSteps.getIngredientIdsPerType();
         var order = new OrderCreate(List.of(
-                ingredientIdsPerType.get(TYPE_BUN).stream().findAny().orElse(""),
-                ingredientIdsPerType.get(TYPE_MAIN).stream().findAny().orElse(""),
-                ingredientIdsPerType.get(TYPE_SAUCE).stream().findAny().orElse("")
+                ingredientIdsPerType.get(TYPE_BUN.getName()).stream().findAny().orElse(""),
+                ingredientIdsPerType.get(TYPE_MAIN.getName()).stream().findAny().orElse(""),
+                ingredientIdsPerType.get(TYPE_SAUCE.getName()).stream().findAny().orElse("")
         ));
 
-        for (int i = 0; i < countOrder; i++) {
+        for (int i = 0; i < ORDER_COUNT; i++) {
             orderSteps.createOrder(order, accessToken);
         }
     }
@@ -45,7 +45,7 @@ public class GetUserOrdersTest extends InitTests {
     @DisplayName("В списке заказов пользователя возвращаются все созданные заказы")
     public void getUserOrdersReturnsAllCreatedOrders() {
         var getOrdersListResponse = orderSteps.getOrders(accessToken);
-        assertEquals(countOrder, getOrdersListResponse.as(OrderList.class).getOrders().size(),
+        assertEquals(ORDER_COUNT, getOrdersListResponse.as(OrderList.class).getOrders().size(),
                 "Количество созданных заказов в ответе не соответствует ожидаемому");
     }
 

@@ -1,4 +1,4 @@
-package site.nomoreparties.stellarburgers;
+package site.nomoreparties.stellarburgers.config;
 
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -8,11 +8,9 @@ import io.restassured.http.Header;
 import io.restassured.specification.RequestSpecification;
 import org.aeonbits.owner.ConfigFactory;
 
-import java.util.Collections;
-
 public class BaseApiSpecs {
 
-    private final EnvConfig envConfig = ConfigFactory.create(EnvConfig.class, Collections.singletonMap("env", "stage"));
+    private final EnvConfig envConfig = ConfigFactory.create(EnvConfig.class);
     private final String HOST = envConfig.getHost();
     private final String BASE_PATH = envConfig.getBasePath();
 

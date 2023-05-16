@@ -3,9 +3,9 @@ package site.nomoreparties.stellarburgers.steps;
 import io.qameta.allure.Step;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import site.nomoreparties.stellarburgers.BaseApiSpecs;
 import site.nomoreparties.stellarburgers.buiseness_entities.OrderCreate;
 import site.nomoreparties.stellarburgers.buiseness_entities.OrderList;
+import site.nomoreparties.stellarburgers.config.BaseApiSpecs;
 
 import static io.restassured.RestAssured.given;
 

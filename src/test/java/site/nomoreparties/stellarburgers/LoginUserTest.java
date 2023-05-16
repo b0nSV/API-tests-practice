@@ -79,9 +79,9 @@ public class LoginUserTest extends InitTests {
 
     static Stream<Arguments> notAuthorizedLoginArguments() {
         return Stream.of(
-                arguments("notExists" + getRandomEmail(), user.getPassword()),
+                arguments("not_exists" + getRandomEmail(), user.getPassword()),
                 arguments(user.getEmail(), createRandomPassword(8)),
-                arguments("notExists" + getRandomEmail(), createRandomPassword(8)),
+                arguments("not_exists" + getRandomEmail(), createRandomPassword(8)),
                 arguments(null, user.getPassword()),
                 arguments(user.getEmail(), null),
                 arguments(null, null)

@@ -1,9 +1,9 @@
 package site.nomoreparties.stellarburgers.steps;
 
 import io.qameta.allure.Step;
-import site.nomoreparties.stellarburgers.BaseApiSpecs;
 import site.nomoreparties.stellarburgers.buiseness_entities.Ingredient;
 import site.nomoreparties.stellarburgers.buiseness_entities.IngredientsResponse;
+import site.nomoreparties.stellarburgers.config.BaseApiSpecs;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,9 +27,9 @@ public class IngredientSteps extends BaseApiSpecs {
     }
 
     @Step("Получить доступные ингредиенты в виде: \"тип ингредиента\" - \"список хэшей\"")
-    public Map<String, List<String>> getIngredientIdsPerType(){
+    public Map<String, List<String>> getIngredientIdsPerType() {
         var ingredients = getIngredients();
-        if (ingredients.isPresent()){
+        if (ingredients.isPresent()) {
             return ingredients.get().stream().collect(Collectors.groupingBy(
                     Ingredient::getType,
                     HashMap::new,
