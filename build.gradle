@@ -32,11 +32,11 @@ dependencies {
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     // Jackson
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.15.0"
     // AssertJ
     testImplementation "org.assertj:assertj-core:3.24.2"
-    // Java-Faker
-    implementation "com.github.javafaker:javafaker:1.0.2"
+    // DataFaker
+    implementation "net.datafaker:datafaker:2.0.1"
     // Owner
     implementation "org.aeonbits.owner:owner:1.0.12"
     // Без него не заводятся тесты на 17 версии java
@@ -44,7 +44,7 @@ dependencies {
     // Simple logger
     testImplementation "org.slf4j:slf4j-simple:2.0.7"
     // REST Assured
-    implementation 'io.rest-assured:rest-assured:5.3.0'
+    implementation "io.rest-assured:rest-assured:5.3.1"
     implementation "io.qameta.allure:allure-rest-assured:${allureVersion}"
 }
 

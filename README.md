@@ -27,7 +27,7 @@
 * [RestAssured](http://rest-assured.io/) библиотека для тестирования REST APIs
 * [JUnit 5](https://junit.org/junit5/) для написания тестов
 * [Owner](https://matteobaccan.github.io/owner/) для управления переменными
-* [java-faker](https://github.com/DiUS/java-faker) для генерации тестовых данных
+* [DataFaker](https://github.com/datafaker-net/datafaker) для генерации тестовых данных
 * [Allure Report](https://docs.qameta.io/allure/) для визуализации результатов тестов
 * [Jackson](https://github.com/FasterXML/jackson) для сериализации/десериализации
 * [Lombok](https://projectlombok.org/) чтобы не писать шаблонный код
